@@ -1,4 +1,6 @@
 projects/01/*.out
+projects/02/*.out
+tools/bin/*.dat
 *.zip
 
 # Created by https://www.gitignore.io/api/vim,macos
