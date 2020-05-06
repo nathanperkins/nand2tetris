@@ -1,5 +1,4 @@
-projects/01/*.out
-projects/02/*.out
+projects/**/*.out
 tools/bin/*.dat
 *.zip
 

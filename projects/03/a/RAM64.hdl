@@ -15,5 +15,19 @@ CHIP RAM64 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+	// Send the load signal to a chip based on address.
+	DMux8Way(in=load,sel=address[0..2],a=aSelected,b=bSelected,c=cSelected,d=dSelected,e=eSelected,f=fSelected,g=gSelected,h=hSelected);
+
+	// Send the correct chip to out based on address.
+	Mux8Way16(a=aOut,b=bOut,c=cOut,d=dOut,e=eOut,f=fOut,g=gOut,h=hOut,sel=address[0..2],out=out);
+	
+	// 8 x RAM8 chips
+	RAM8(in=in,load=aSelected,address=address[3..5],out=aOut);
+	RAM8(in=in,load=bSelected,address=address[3..5],out=bOut);
+	RAM8(in=in,load=cSelected,address=address[3..5],out=cOut);
+	RAM8(in=in,load=dSelected,address=address[3..5],out=dOut);
+	RAM8(in=in,load=eSelected,address=address[3..5],out=eOut);
+	RAM8(in=in,load=fSelected,address=address[3..5],out=fOut);
+	RAM8(in=in,load=gSelected,address=address[3..5],out=gOut);
+	RAM8(in=in,load=hSelected,address=address[3..5],out=hOut);
 }
