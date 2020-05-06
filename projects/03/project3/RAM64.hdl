@@ -1,17 +1,17 @@
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
-// File name: projects/03/b/RAM4K.hdl
+// File name: projects/03/a/RAM64.hdl
 
 /**
- * Memory of 4K registers, each 16 bit-wide. Out holds the value
+ * Memory of 64 registers, each 16 bit-wide. Out holds the value
  * stored at the memory location specified by address. If load==1, then 
  * the in value is loaded into the memory location specified by address 
  * (the loaded value will be emitted to out from the next time step onward).
  */
 
-CHIP RAM4K {
-    IN in[16], load, address[12];
+CHIP RAM64 {
+    IN in[16], load, address[6];
     OUT out[16];
 
     PARTS:
@@ -21,13 +21,13 @@ CHIP RAM4K {
 	// Send the correct chip to out based on address.
 	Mux8Way16(a=aOut,b=bOut,c=cOut,d=dOut,e=eOut,f=fOut,g=gOut,h=hOut,sel=address[0..2],out=out);
 	
-	// 8 x RAM512 chips
-	RAM512(in=in,load=aSelected,address=address[3..11],out=aOut);
-	RAM512(in=in,load=bSelected,address=address[3..11],out=bOut);
-	RAM512(in=in,load=cSelected,address=address[3..11],out=cOut);
-	RAM512(in=in,load=dSelected,address=address[3..11],out=dOut);
-	RAM512(in=in,load=eSelected,address=address[3..11],out=eOut);
-	RAM512(in=in,load=fSelected,address=address[3..11],out=fOut);
-	RAM512(in=in,load=gSelected,address=address[3..11],out=gOut);
-	RAM512(in=in,load=hSelected,address=address[3..11],out=hOut);
+	// 8 x RAM8 chips
+	RAM8(in=in,load=aSelected,address=address[3..5],out=aOut);
+	RAM8(in=in,load=bSelected,address=address[3..5],out=bOut);
+	RAM8(in=in,load=cSelected,address=address[3..5],out=cOut);
+	RAM8(in=in,load=dSelected,address=address[3..5],out=dOut);
+	RAM8(in=in,load=eSelected,address=address[3..5],out=eOut);
+	RAM8(in=in,load=fSelected,address=address[3..5],out=fOut);
+	RAM8(in=in,load=gSelected,address=address[3..5],out=gOut);
+	RAM8(in=in,load=hSelected,address=address[3..5],out=hOut);
 }
