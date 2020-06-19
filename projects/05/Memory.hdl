@@ -27,5 +27,17 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+	// load flags
+	Not(in=address[14],out=notAddress14);
+	And(a=load,b=notAddress14,out=loadRAM);
+	And(a=load,b=address[14],out=loadScreen);
+
+	// output mux
+	Mux16(a=screenToMux,b=keyboardToMux,sel=address[13],out=keyScreenToMux);
+	Mux16(a=ramToMux,b=keyScreenToMux,sel=address[14],out=out);
+
+	// chips
+	RAM16K(in=in,load=loadRAM,address=address[0..13],out=ramToMux);
+	Screen(in=in,load=loadScreen,address=address[0..12],out=screenToMux);
+	Keyboard(out=keyboardToMux);
 }

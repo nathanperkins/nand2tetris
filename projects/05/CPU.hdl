@@ -25,8 +25,15 @@
  * than to the address resulting from executing the current instruction. 
  */
 
-CHIP CPU {
+// instruction
+// i[15]: 0 for A-instruction, 1 for C-instruction
+// i[13..14]: not used
+// i[12]: when 1, y is Memory[aRegOut]
+// i[11..6]: zx, nx, zy, ny, f, no
+// 5, 4, 3: load A,D,M
+// i[2..0]: JLT, JEQ, JGT
 
+CHIP CPU {
     IN  inM[16],         // M value input  (M = contents of RAM[A])
         instruction[16], // Instruction for execution
         reset;           // Signals whether to re-start the current
@@ -39,5 +46,43 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+	// A register can be loaded during A instruction or when load A is specified with i[5].
+	Not(in=instruction[15],out=aInstruction);
+	Or(a=aInstruction,b=instruction[5],out=loadA);
+	// A register should get input from instruction during A-instruction, otherwise from the ALU.
+	Mux16(a=instruction,b=aluOut,sel=instruction[15],out=aRegIn);
+	ARegister(in=aRegIn,load=loadA,out=aRegOut,out[0..14]=addressM);
+
+	// Load Program Counter
+	//
+	// zr = 1, when out=0
+	// ng = 1, when out<0
+	// ng, zr = 0, when out>0
+	Not(in=ng,out=notNg);
+	Not(in=zr,out=notZr);
+	And(a=notNg,b=notZr,out=gt);
+
+	// j1, j2, j3 = i[2], i[1], i[0]
+	// j1 = JLT = ng
+	// j2 = JEQ = zr
+	// j3 = JGT = gt
+	And(a=ng,b=instruction[2],out=JLT);
+	And(a=zr,b=instruction[1],out=JEQ);
+	And(a=gt,b=instruction[0],out=JGT);
+	Or(a=JLT,b=JGT,out=JNE);
+	Or(a=JNE,b=JEQ,out=JMP);
+	And(a=JMP,b=instruction[15],out=loadPC);
+
+	PC(in=aRegOut,load=loadPC,inc=true,reset=reset,out[0..14]=pc);
+
+	// x input for the ALU is always the value in D, which should be loaded when i[15] and i[4].
+	And(a=instruction[4],b=instruction[15],out=loadD);
+	DRegister(in=aluOut,load=loadD,out=x);
+	// y input for the ALU is memory when i[12], otherwise it is the value in A.
+	Mux16(a=aRegOut,b=inM,sel=instruction[12],out=y);
+	// ALU
+	ALU(x=x,y=y,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6],out=aluOut,out=outM,zr=zr,ng=ng);
+
+	// i[3] means that output should be written to memory.
+	And(a=instruction[3],b=instruction[15],out=writeM);
 }
