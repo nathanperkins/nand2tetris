@@ -1,6 +1,7 @@
 projects/**/*.out
 tools/bin/*.dat
 *.zip
+projects/06/**/*.hack
 
 # Created by https://www.gitignore.io/api/vim,macos
 # Edit at https://www.gitignore.io/?templates=vim,macos
